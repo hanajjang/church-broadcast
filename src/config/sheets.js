@@ -27,13 +27,13 @@ export const CONFIG = {
     || "https://forms.gle/LHWaVr98pLKwc55x8",
   // 파트별 Google Slides 임베드 URL
   GUIDE_AUDIO_URL: import.meta.env.VITE_GUIDE_AUDIO_URL
-    || "https://docs.google.com/presentation/d/e/2PACX-1vRZKJHly6UFgmtNqUrDf7tgVM_GecQ_o-3TnUypBQVAW606xeArSndxZRbbodQkocJ6yE3hvIF4CRtm/pub?start=false&loop=false&delayms=60000",
+    || "https://docs.google.com/presentation/d/e/2PACX-1vRZKJHly6UFgmtNqUrDf7tgVM_GecQ_o-3TnUypBQVAW606xeArSndxZRbbodQkocJ6yE3hvIF4CRtm/pub?start=false&loop=false&delayms=60000&embedded=true",
   GUIDE_PC_URL: import.meta.env.VITE_GUIDE_PC_URL
-    || "https://docs.google.com/presentation/d/e/2PACX-1vTg5QHE0QAGhrmHN_sh5ctFAeHbF-MpFJmOkRi14jXfa-8FxzOGEdP0AcqxlkyAgVVInwpRIjIUiMhn/pub?start=false&loop=false&delayms=60000",
+    || "https://docs.google.com/presentation/d/e/2PACX-1vTg5QHE0QAGhrmHN_sh5ctFAeHbF-MpFJmOkRi14jXfa-8FxzOGEdP0AcqxlkyAgVVInwpRIjIUiMhn/pub?start=false&loop=false&delayms=60000&embedded=true",
   GUIDE_CAMERA_URL: import.meta.env.VITE_GUIDE_CAMERA_URL
-    || "https://docs.google.com/presentation/d/e/2PACX-1vQqWeTxJowegjXUNxDK6K4o30aOkoG1v28jaeMOD8k_JnFK1fhW3WRu4pDsqniKeHWrt0yNaweRDrOO/pub?start=false&loop=false&delayms=60000",
+    || "https://docs.google.com/presentation/d/e/2PACX-1vQqWeTxJowegjXUNxDK6K4o30aOkoG1v28jaeMOD8k_JnFK1fhW3WRu4pDsqniKeHWrt0yNaweRDrOO/pub?start=false&loop=false&delayms=60000&embedded=true",
   GUIDE_LIGHTING_URL: import.meta.env.VITE_GUIDE_LIGHTING_URL
-    || "https://docs.google.com/presentation/d/e/2PACX-1vRH9AAzPYhzGSUfSxH0_ySAPvDjHgkos5t7yx2Yc51Kj5wafI7LXMKfOytUKaqoWQvE542ELJxU4ft0/pub?start=false&loop=false&delayms=60000",
+    || "https://docs.google.com/presentation/d/e/2PACX-1vRH9AAzPYhzGSUfSxH0_ySAPvDjHgkos5t7yx2Yc51Kj5wafI7LXMKfOytUKaqoWQvE542ELJxU4ft0/pub?start=false&loop=false&delayms=60000&embedded=true",
 };
 
 const BASE_URL = "https://sheets.googleapis.com/v4/spreadsheets";
