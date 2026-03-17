@@ -313,7 +313,7 @@ export default function IssueLog({ darkMode }) {
       )}
     </div>
   );
-}};
+};
 
 // Google Form 카테고리와 Sheets 카테고리 매핑
 // (폼에서 "🖥️  PC · 모니터" 형식으로 저장되므로 포함 여부로 비교)
