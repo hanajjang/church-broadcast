@@ -4,27 +4,12 @@ import { fetchSheet, driveUrlToImage, DEMO_DATA, CONFIG } from "../config/sheets
 const ISSUE_CATEGORIES = ["전체", "PC · 모니터", "음향", "카메라 · 송출", "프로프리젠터", "조명", "네트워크", "기타 장비", "기타"];
 
 const CAT_ICONS = {
-  "PC · 모니터":   "🖥️",
-  "음향":          "🎙️",
-  "카메라 · 송출": "📹",
-  "프로프리젠터":  "📺",
-  "조명":          "💡",
-  "네트워크":      "🌐",
-  "기타 장비":     "🔧",
-  "기타":          "📝",
+  "PC · 모니터":   "🖥️", "음향": "🎙️", "카메라 · 송출": "📹",
+  "프로프리젠터":  "📺", "조명": "💡", "네트워크": "🌐",
+  "기타 장비":     "🔧", "기타": "📝",
 };
 
-const CAT_COLORS_DARK = {
-  "PC · 모니터":   "bg-blue-500/20 text-blue-400 border-blue-500/30",
-  "음향":          "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  "카메라 · 송출": "bg-pink-500/20 text-pink-400 border-pink-500/30",
-  "프로프리젠터":  "bg-cyan-500/20 text-cyan-400 border-cyan-500/30",
-  "조명":          "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-  "네트워크":      "bg-green-500/20 text-green-400 border-green-500/30",
-  "기타 장비":     "bg-orange-500/20 text-orange-400 border-orange-500/30",
-  "기타":          "bg-gray-500/20 text-gray-400 border-gray-500/30",
-};
-const CAT_COLORS_LIGHT = {
+const CAT_COLORS = {
   "PC · 모니터":   "bg-blue-100 text-blue-700 border-blue-200",
   "음향":          "bg-purple-100 text-purple-700 border-purple-200",
   "카메라 · 송출": "bg-pink-100 text-pink-700 border-pink-200",
@@ -35,7 +20,8 @@ const CAT_COLORS_LIGHT = {
   "기타":          "bg-gray-100 text-gray-600 border-gray-200",
 };
 
-// 이모지/특수문자 무시하고 키 찾기
+const ISSUES_SHEETS_URL = `https://docs.google.com/spreadsheets/d/1R3V7u77x1LSDPrhlfqZ2vaxtlf6B-oxxpq6NKYcQ5a4/edit`;
+
 function getField(issue, ...keywords) {
   for (const kw of keywords) {
     if (issue[kw] !== undefined && issue[kw] !== "") return issue[kw];
@@ -44,9 +30,7 @@ function getField(issue, ...keywords) {
     const cleanKey = key.replace(/[^\w가-힣]/g, "").toLowerCase();
     for (const kw of keywords) {
       const cleanKw = kw.replace(/[^\w가-힣]/g, "").toLowerCase();
-      if (cleanKey.includes(cleanKw) || cleanKw.includes(cleanKey)) {
-        return issue[key] || "";
-      }
+      if (cleanKey.includes(cleanKw) || cleanKw.includes(cleanKey)) return issue[key] || "";
     }
   }
   return "";
@@ -57,7 +41,7 @@ function getCategory(issue)   { return getField(issue, "🗂️ 카테고리", "
 function getDate(issue)       { return getField(issue, "📅 발생 날짜", "발생 날짜", "날짜", "Timestamp"); }
 function getContent(issue)    { return getField(issue, "🔍 발생 상황", "발생 상황", "내용"); }
 function getSolution(issue)   { return getField(issue, "✅ 해결 방법", "해결 방법", "해결방법"); }
-function getPrevention(issue) { return getField(issue, "🛡️ 재발 방지 포인트", "재발 방지 포인트", "재발"); }
+function getPrevention(issue) { return getField(issue, "🛡️ 재발 방지 포인트", "재발 방지 포인트"); }
 function getAuthor(issue)     { return getField(issue, "✍️ 작성자", "작성자"); }
 function getPhotoUrl(issue) {
   const raw = getField(issue, "📷 사진 링크 (Google Drive)", "사진 링크 (Google Drive)", "사진URL");
@@ -72,19 +56,17 @@ function getCatIcon(cat) {
   }
   return "📌";
 }
-function getCatColor(cat, dark) {
-  const map = dark ? CAT_COLORS_DARK : CAT_COLORS_LIGHT;
-  if (!cat) return dark ? "bg-gray-500/20 text-gray-400 border-gray-500/30" : "bg-gray-100 text-gray-600 border-gray-200";
-  for (const [key, color] of Object.entries(map)) {
+function getCatColor(cat) {
+  if (!cat) return "bg-gray-100 text-gray-600 border-gray-200";
+  for (const [key, color] of Object.entries(CAT_COLORS)) {
     if (cat.replace(/\s/g, "").includes(key.replace(/\s/g, ""))) return color;
   }
-  return dark ? "bg-gray-500/20 text-gray-400 border-gray-500/30" : "bg-gray-100 text-gray-600 border-gray-200";
+  return "bg-gray-100 text-gray-600 border-gray-200";
 }
 
-export default function IssueLog({ darkMode }) {
+export default function IssueLog() {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const [category, setCategory] = useState("전체");
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState(null);
@@ -94,99 +76,75 @@ export default function IssueLog({ darkMode }) {
 
   async function load() {
     setLoading(true);
-    if (CONFIG.SHEET_ID === "YOUR_GOOGLE_SHEET_ID") {
-      setIssues(DEMO_DATA.issues);
-      setLoading(false);
-      return;
-    }
+    if (CONFIG.SHEET_ID === "YOUR_GOOGLE_SHEET_ID") { setIssues(DEMO_DATA.issues); setLoading(false); return; }
     const data = await fetchSheet("Issues", CONFIG.ISSUES_SHEET_ID);
-    if (data === null) { setError(true); setIssues(DEMO_DATA.issues); }
-    else setIssues(data);
+    setIssues(data || DEMO_DATA.issues);
     setLoading(false);
   }
 
   const filtered = issues.filter(issue => {
     const issueCat = getCategory(issue);
-    const issueTitle = getTitle(issue);
-    const issueContent = getContent(issue);
     const matchCat = category === "전체" || issueCat.replace(/\s/g, "").includes(category.replace(/\s/g, ""));
     const matchSearch = !search ||
-      issueTitle.toLowerCase().includes(search.toLowerCase()) ||
-      issueContent.toLowerCase().includes(search.toLowerCase());
+      getTitle(issue).toLowerCase().includes(search.toLowerCase()) ||
+      getContent(issue).toLowerCase().includes(search.toLowerCase());
     return matchCat && matchSearch;
   });
 
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start justify-between mb-5 gap-3">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold">⚠️ 이슈 기록</h1>
-          <p className={`text-sm mt-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
-            방송 장애 및 해결 사례 모음
-            {error && <span className="text-amber-400 ml-2">⚠ 시트 연결 실패, 데모 데이터 표시 중</span>}
-          </p>
+          <h1 className="text-xl md:text-2xl font-bold text-[#0f172a]">⚠️ 이슈 기록</h1>
+          <p className="text-sm mt-1 text-[#64748b]">방송 장애 및 해결 사례 모음</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className={`relative flex items-center rounded-xl border ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} px-3 py-2 gap-2 w-full md:w-48`}>
-            <span className="text-gray-400 text-sm">🔍</span>
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="이슈 검색..."
-              className={`flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400 ${darkMode ? "text-white" : "text-gray-800"}`}
-            />
-            {search && <button onClick={() => setSearch("")} className="text-gray-400 text-xs">✕</button>}
-          </div>
-          <a
-            href={CONFIG.ISSUE_FORM_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 text-white text-sm font-semibold hover:bg-amber-600 transition-colors shadow-sm"
-          >
-            <span>📋</span> 이슈 등록
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <a href={CONFIG.ISSUE_FORM_URL} target="_blank" rel="noreferrer"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#2563eb] text-white text-xs font-semibold hover:bg-[#1d4ed8] transition-colors shadow-sm">
+            <span>📋</span><span>이슈 등록</span>
           </a>
         </div>
       </div>
 
       {/* 안내 배너 */}
-      <div className={`flex items-center gap-3 rounded-xl px-4 py-3 mb-5 text-sm ${darkMode ? "bg-amber-500/10 border border-amber-500/20 text-amber-300" : "bg-amber-50 border border-amber-200 text-amber-700"}`}>
-        <span>📲</span>
-        <span>이슈 등록 시 Google Form을 사용합니다. 등록하면 텔레그램으로 알람이 발송됩니다.</span>
-        <a href={CONFIG.ISSUE_FORM_URL} target="_blank" rel="noreferrer" className="ml-auto underline font-medium flex-shrink-0">
-          폼 바로가기 →
-        </a>
+      <div className="flex items-start gap-3 rounded-xl px-4 py-3 mb-5 text-sm bg-[#eff6ff] border border-[#bfdbfe] text-[#1e40af]">
+        <span className="flex-shrink-0 mt-0.5">📲</span>
+        <span className="leading-relaxed">이슈 등록은 Google Form으로 제출하면 텔레그램으로 알람이 발송됩니다.</span>
       </div>
 
-      {/* Category Filter */}
-      <div className="flex gap-2 mb-5 flex-wrap">
+      {/* 검색 */}
+      <div className="flex items-center rounded-xl border border-[#e2e8f0] bg-white px-3 py-2.5 gap-2 mb-4 shadow-sm">
+        <span className="text-gray-400">🔍</span>
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="이슈 검색..."
+          className="flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400 text-[#0f172a]" />
+        {search && <button onClick={() => setSearch("")} className="text-gray-400 text-xs">✕</button>}
+      </div>
+
+      {/* 카테고리 필터 */}
+      <div className="flex gap-1.5 mb-5 flex-wrap">
         {ISSUE_CATEGORIES.map(cat => (
-          <button
-            key={cat}
-            onClick={() => setCategory(cat)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+          <button key={cat} onClick={() => setCategory(cat)}
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
               category === cat
-                ? "bg-amber-500 text-white border-amber-500"
-                : darkMode ? "border-gray-700 text-gray-400 hover:border-gray-500 hover:text-white" : "border-gray-200 text-gray-600 hover:border-amber-300"
-            }`}
-          >
-            {cat !== "전체" && <span className="text-xs">{CAT_ICONS[cat]}</span>}
+                ? "bg-[#2563eb] text-white border-[#2563eb]"
+                : "border-[#e2e8f0] text-[#64748b] bg-white hover:border-[#2563eb] hover:text-[#2563eb]"
+            }`}>
+            {cat !== "전체" && <span>{CAT_ICONS[cat]}</span>}
             {cat}
           </button>
         ))}
       </div>
 
-      {/* Issue Cards */}
+      {/* 이슈 카드 */}
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <div className="animate-spin w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full" />
+          <div className="animate-spin w-8 h-8 border-2 border-[#2563eb] border-t-transparent rounded-full" />
         </div>
       ) : (
         <div className="space-y-3">
           {filtered.length === 0 ? (
-            <div className={`text-center py-16 ${darkMode ? "text-gray-500" : "text-gray-400"}`}>
-              이슈 기록이 없습니다
-            </div>
+            <div className="text-center py-16 text-[#94a3b8]">이슈 기록이 없습니다</div>
           ) : (
             filtered.map((issue, i) => {
               const title = getTitle(issue);
@@ -197,75 +155,71 @@ export default function IssueLog({ darkMode }) {
               const solution = getSolution(issue);
               const prevention = getPrevention(issue);
               const author = getAuthor(issue);
-              const catColor = getCatColor(category, darkMode);
+              const catColor = getCatColor(category);
               const catIcon = getCatIcon(category);
 
               return (
-                <div
-                  key={i}
-                  className={`rounded-2xl border transition-all ${
-                    expanded === i
-                      ? darkMode ? "border-amber-500/40 bg-gray-900" : "border-amber-300 bg-amber-50"
-                      : darkMode ? "border-gray-800 bg-gray-900 hover:border-gray-700" : "border-gray-200 bg-white hover:border-amber-200"
-                  }`}
-                >
-                  <div
-                    className="flex items-center gap-4 p-4 cursor-pointer"
-                    onClick={() => setExpanded(expanded === i ? null : i)}
-                  >
+                <div key={i} className={`rounded-2xl border transition-all bg-white ${
+                  expanded === i ? "border-[#93c5fd] shadow-md" : "border-[#e2e8f0] hover:border-[#93c5fd]"
+                }`}>
+                  {/* 카드 헤더 */}
+                  <div className="flex items-center gap-3 p-4 cursor-pointer"
+                    onClick={() => setExpanded(expanded === i ? null : i)}>
                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0 ${catColor}`}>
                       {catIcon}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${catColor}`}>
-                          {category?.replace(/^[^\w가-힣]+/, "").trim() || category}
+                          {category?.replace(/^[^\w가-힣]+/, "").trim()}
                         </span>
-                        <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}>{date}</span>
-                        {author && <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}>✍️ {author}</span>}
-                        {imgUrl && <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}>📷 사진</span>}
+                        <span className="text-xs text-[#94a3b8]">{date}</span>
+                        {author && <span className="text-xs text-[#94a3b8]">✍️ {author}</span>}
+                        {imgUrl && <span className="text-xs text-[#94a3b8]">📷</span>}
                       </div>
-                      <p className={`font-semibold text-sm mt-1 ${darkMode ? "text-white" : "text-gray-900"}`}>{title}</p>
+                      <p className="font-semibold text-sm mt-1 text-[#0f172a] truncate">{title}</p>
                     </div>
-                    <span className={`text-gray-400 transition-transform duration-200 flex-shrink-0 ${expanded === i ? "rotate-180" : ""}`}>▾</span>
+                    <span className={`text-[#94a3b8] transition-transform duration-200 flex-shrink-0 ${expanded === i ? "rotate-180" : ""}`}>▾</span>
                   </div>
 
+                  {/* 펼쳐진 내용 */}
                   {expanded === i && (
-                    <div className={`px-4 pb-4 border-t pt-3 space-y-3 ${darkMode ? "border-gray-800" : "border-gray-100"}`}>
+                    <div className="px-4 pb-4 border-t border-[#f1f5f9] pt-3 space-y-3">
                       {content && (
                         <div>
-                          <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${darkMode ? "text-gray-500" : "text-gray-400"}`}>발생 상황</p>
-                          <p className={`text-sm whitespace-pre-line ${darkMode ? "text-gray-300" : "text-gray-700"}`}>{content}</p>
+                          <p className="text-xs font-semibold uppercase tracking-wide mb-1 text-[#64748b]">발생 상황</p>
+                          <p className="text-sm whitespace-pre-line text-[#334155] leading-relaxed">{content}</p>
                         </div>
                       )}
                       {imgUrl && (
                         <div>
-                          <p className={`text-xs font-semibold uppercase tracking-wide mb-2 ${darkMode ? "text-gray-500" : "text-gray-400"}`}>첨부 사진</p>
-                          <img
-                            src={imgUrl}
-                            alt="이슈 사진"
-                            className="rounded-xl max-h-64 object-contain cursor-zoom-in hover:opacity-90 transition-opacity border border-gray-700"
+                          <p className="text-xs font-semibold uppercase tracking-wide mb-2 text-[#64748b]">첨부 사진</p>
+                          <img src={imgUrl} alt="이슈 사진"
+                            className="rounded-xl max-h-64 object-contain cursor-zoom-in hover:opacity-90 transition-opacity border border-[#e2e8f0]"
                             onClick={e => { e.stopPropagation(); setLightbox(imgUrl); }}
-                            onError={e => { e.target.parentElement.style.display = "none"; }}
-                          />
+                            onError={e => { e.target.parentElement.style.display = "none"; }} />
                         </div>
                       )}
                       {solution && (
                         <div>
-                          <p className="text-xs font-semibold uppercase tracking-wide mb-1 text-amber-500">해결 방법</p>
-                          <p className={`text-sm whitespace-pre-line rounded-xl p-3 ${darkMode ? "bg-amber-500/10 text-amber-300 border border-amber-500/20" : "bg-amber-50 text-amber-800 border border-amber-200"}`}>
-                            ✅ {solution}
-                          </p>
+                          <p className="text-xs font-semibold uppercase tracking-wide mb-1 text-[#2563eb]">해결 방법</p>
+                          <p className="text-sm whitespace-pre-line rounded-xl p-3 bg-[#eff6ff] text-[#1e40af] border border-[#bfdbfe] leading-relaxed">✅ {solution}</p>
                         </div>
                       )}
                       {prevention && (
                         <div>
-                          <p className={`text-xs font-semibold uppercase tracking-wide mb-1 ${darkMode ? "text-blue-400" : "text-blue-600"}`}>재발 방지 포인트</p>
-                          <p className={`text-sm whitespace-pre-line rounded-xl p-3 ${darkMode ? "bg-blue-500/10 text-blue-300 border border-blue-500/20" : "bg-blue-50 text-blue-800 border border-blue-200"}`}>
-                            🛡️ {prevention}
-                          </p>
+                          <p className="text-xs font-semibold uppercase tracking-wide mb-1 text-[#7c3aed]">재발 방지 포인트</p>
+                          <p className="text-sm whitespace-pre-line rounded-xl p-3 bg-purple-50 text-purple-800 border border-purple-200 leading-relaxed">🛡️ {prevention}</p>
                         </div>
                       )}
+                      {/* 수정/삭제 버튼 */}
+                      <div className="pt-2 border-t border-[#f1f5f9] flex items-center justify-between">
+                        <p className="text-xs text-[#94a3b8]">수정·삭제는 Sheets에서 직접 가능합니다</p>
+                        <a href={ISSUES_SHEETS_URL} target="_blank" rel="noreferrer"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#e2e8f0] text-xs text-[#64748b] hover:border-[#2563eb] hover:text-[#2563eb] transition-colors bg-white">
+                          ✏️ Sheets에서 수정·삭제
+                        </a>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -275,15 +229,12 @@ export default function IssueLog({ darkMode }) {
         </div>
       )}
 
-      <p className={`mt-4 text-xs ${darkMode ? "text-gray-600" : "text-gray-400"}`}>
-        * 이슈는 Google Form으로 등록 → Sheets "Issues" 시트에 자동 저장됩니다.
-      </p>
+      <p className="mt-4 text-xs text-[#94a3b8]">* 이슈는 Google Form 제출 → Sheets "Issues" 시트에 자동 저장됩니다.</p>
 
+      {/* 라이트박스 */}
       {lightbox && (
-        <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
-          onClick={() => setLightbox(null)}
-        >
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setLightbox(null)}>
           <img src={lightbox} alt="확대 사진" className="max-w-full max-h-full rounded-2xl shadow-2xl" />
           <button className="absolute top-5 right-5 text-white text-xl bg-white/10 w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/20">✕</button>
         </div>
