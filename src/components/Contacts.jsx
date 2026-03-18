@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
 import { fetchSheet, DEMO_DATA, CONFIG } from "../config/sheets";
 
-const PART_ICONS = { "총괄/영상": "🎬", "음향": "🎙", "조명": "💡", "자막/PPT": "📝" };
+const CONTACTS_SHEETS_URL = `https://docs.google.com/spreadsheets/d/1TlWKZ5tr531kNZMBLLwb4PjX6ON1JY03i4fHrvJE6OM/edit#gid=Contacts`;
 
-export default function Contacts({ darkMode }) {
+const PART_ICONS = {
+  "총괄/영상": "🎬", "음향": "🎙️", "조명": "💡",
+  "자막/PPT": "📝", "카메라": "📹", "카메라/OBS": "📹",
+};
+
+export default function Contacts() {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      if (CONFIG.SHEET_ID === "YOUR_GOOGLE_SHEET_ID") {
-        setContacts(DEMO_DATA.contacts);
-        setLoading(false);
-        return;
-      }
+      if (CONFIG.SHEET_ID === "YOUR_GOOGLE_SHEET_ID") { setContacts(DEMO_DATA.contacts); setLoading(false); return; }
       const data = await fetchSheet("Contacts");
       setContacts(data || DEMO_DATA.contacts);
       setLoading(false);
@@ -24,69 +25,66 @@ export default function Contacts({ darkMode }) {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-xl md:text-2xl font-bold">📞 담당자 연락처</h1>
-        <p className={`text-sm mt-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>방송부 파트별 담당자</p>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <h1 className="text-xl md:text-2xl font-bold text-[#0f172a]">📞 담당자 연락처</h1>
+          <p className="text-sm mt-1 text-[#64748b]">방송부 파트별 담당자</p>
+        </div>
+        <a href={CONTACTS_SHEETS_URL} target="_blank" rel="noreferrer"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#2563eb] text-white text-xs font-semibold hover:bg-[#1d4ed8] transition-colors shadow-sm">
+          <span>➕</span><span>담당자 추가</span>
+        </a>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center h-48">
-          <div className="animate-spin w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full" />
+          <div className="animate-spin w-8 h-8 border-2 border-[#2563eb] border-t-transparent rounded-full" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {contacts.map((contact, i) => (
-            <div
-              key={i}
-              className={`rounded-2xl border p-5 transition-all hover:shadow-lg hover:scale-[1.01] ${
-                darkMode ? "border-gray-800 bg-gray-900 hover:border-amber-500/30" : "border-gray-200 bg-white hover:border-amber-300"
-              }`}
-            >
-              {/* Avatar */}
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-2xl">
+            <div key={i} className="rounded-2xl border border-[#e2e8f0] bg-white p-4 hover:border-[#93c5fd] hover:shadow-md transition-all">
+              <div className="flex items-start gap-3">
+                {/* 아이콘 */}
+                <div className="w-11 h-11 rounded-2xl bg-[#eff6ff] flex items-center justify-center text-2xl flex-shrink-0">
                   {PART_ICONS[contact.파트] || "👤"}
                 </div>
-                <div>
-                  <p className="font-bold text-base">{contact.이름}</p>
-                  <p className="text-amber-500 text-xs font-medium">{contact.파트}</p>
-                </div>
-                {contact.비고 && (
-                  <span className={`ml-auto text-xs px-2 py-0.5 rounded-full ${darkMode ? "bg-amber-500/20 text-amber-400" : "bg-amber-100 text-amber-700"}`}>
-                    {contact.비고}
-                  </span>
-                )}
-              </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="font-bold text-base text-[#0f172a]">{contact.이름}</p>
+                    {contact.비고 && (
+                      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[#eff6ff] text-[#2563eb] border border-[#bfdbfe]">
+                        {contact.비고}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-[#2563eb] font-medium mt-0.5">{contact.파트}</p>
 
-              {/* Info */}
-              <div className={`space-y-2 text-sm ${darkMode ? "text-gray-400" : "text-gray-600"}`}>
-                {contact.연락처 && (
-                  <a
-                    href={`tel:${contact.연락처}`}
-                    className={`flex items-center gap-2 rounded-xl px-3 py-2 transition-colors ${darkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-amber-50"}`}
-                  >
-                    <span>📱</span>
-                    <span className="font-mono">{contact.연락처}</span>
-                  </a>
-                )}
-                {contact.이메일 && (
-                  <a
-                    href={`mailto:${contact.이메일}`}
-                    className={`flex items-center gap-2 rounded-xl px-3 py-2 transition-colors ${darkMode ? "bg-gray-800 hover:bg-gray-700" : "bg-gray-50 hover:bg-amber-50"}`}
-                  >
-                    <span>✉️</span>
-                    <span className="truncate">{contact.이메일}</span>
-                  </a>
-                )}
+                  <div className="mt-3 space-y-1.5">
+                    {contact.연락처 && (
+                      <a href={`tel:${contact.연락처}`}
+                        className="flex items-center gap-2 text-sm text-[#334155] hover:text-[#2563eb] transition-colors">
+                        <span className="text-[#94a3b8] text-xs">📱</span>
+                        <span>{contact.연락처}</span>
+                      </a>
+                    )}
+                    {contact.이메일 && (
+                      <a href={`mailto:${contact.이메일}`}
+                        className="flex items-center gap-2 text-sm text-[#334155] hover:text-[#2563eb] transition-colors">
+                        <span className="text-[#94a3b8] text-xs">✉️</span>
+                        <span className="truncate">{contact.이메일}</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      <div className={`mt-6 rounded-2xl border p-4 text-sm ${darkMode ? "border-gray-800 bg-gray-900 text-gray-400" : "border-gray-200 bg-white text-gray-500"}`}>
-        <p>📋 담당자 정보는 Google Sheets의 <strong>Contacts</strong> 시트에서 관리합니다.</p>
-      </div>
+      <p className="mt-4 text-xs text-[#94a3b8]">* 담당자 정보는 Google Sheets "Contacts" 시트에서 관리합니다</p>
     </div>
   );
 }
