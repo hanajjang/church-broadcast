@@ -1,38 +1,39 @@
 import { useState, useEffect } from "react";
 import { fetchSheet, DEMO_DATA, CONFIG } from "../config/sheets";
 
+// URL을 직접 넣어서 동적 접근 문제 해결
 const GUIDE_PARTS = [
   {
     id: "audio",
     label: "🎙 음향 파트",
     desc: "믹서, 마이크, 앰프 운용",
-    urlKey: "GUIDE_AUDIO_URL",
     color: "text-purple-400",
     accent: "border-purple-500 bg-purple-500/10",
+    url: "https://docs.google.com/presentation/d/e/2PACX-1vRZKJHly6UFgmtNqUrDf7tgVM_GecQ_o-3TnUypBQVAW606xeArSndxZRbbodQkocJ6yE3hvIF4CRtm/pub?start=false&loop=false&delayms=60000&embedded=true",
   },
   {
     id: "pc",
     label: "💻 PC · 자막 · PPT",
     desc: "자막 편집, PPT 운용, PC 관리",
-    urlKey: "GUIDE_PC_URL",
     color: "text-blue-400",
     accent: "border-blue-500 bg-blue-500/10",
+    url: "https://docs.google.com/presentation/d/e/2PACX-1vTg5QHE0QAGhrmHN_sh5ctFAeHbF-MpFJmOkRi14jXfa-8FxzOGEdP0AcqxlkyAgVVInwpRIjIUiMhn/pub?start=false&loop=false&delayms=60000&embedded=true",
   },
   {
     id: "camera",
     label: "📹 카메라 · 송출",
     desc: "OBS, 유튜브 송출, DSLR, 본당 모니터",
-    urlKey: "GUIDE_CAMERA_URL",
     color: "text-pink-400",
     accent: "border-pink-500 bg-pink-500/10",
+    url: "https://docs.google.com/presentation/d/e/2PACX-1vQqWeTxJowegjXUNxDK6K4o30aOkoG1v28jaeMOD8k_JnFK1fhW3WRu4pDsqniKeHWrt0yNaweRDrOO/pub?start=false&loop=false&delayms=60000&embedded=true",
   },
   {
     id: "lighting",
     label: "💡 조명 파트",
     desc: "조명 패널, 색온도, 씬 관리",
-    urlKey: "GUIDE_LIGHTING_URL",
     color: "text-amber-400",
     accent: "border-amber-500 bg-amber-500/10",
+    url: "https://docs.google.com/presentation/d/e/2PACX-1vRH9AAzPYhzGSUfSxH0_ySAPvDjHgkos5t7yx2Yc51Kj5wafI7LXMKfOytUKaqoWQvE542ELJxU4ft0/pub?start=false&loop=false&delayms=60000&embedded=true",
   },
 ];
 
@@ -75,7 +76,7 @@ export default function BroadcastGuide({ darkMode }) {
   ];
 
   const currentPart = GUIDE_PARTS.find(p => p.id === guidePart);
-  const currentUrl = CONFIG[currentPart?.urlKey] || "";
+  const currentUrl = currentPart?.url || "";
 
   return (
     <div>
@@ -104,7 +105,6 @@ export default function BroadcastGuide({ darkMode }) {
       {/* ── 사용 가이드 ── */}
       {tab === "guide" && (
         <div>
-          {/* 파트 선택 — 2×2 그리드 */}
           <div className="grid grid-cols-2 gap-3 mb-5">
             {GUIDE_PARTS.map(part => (
               <button
@@ -128,39 +128,20 @@ export default function BroadcastGuide({ darkMode }) {
             ))}
           </div>
 
-          {/* 슬라이드 임베드 or 안내 */}
-          {currentUrl ? (
-            <div className="rounded-2xl overflow-hidden border border-gray-700 shadow-xl aspect-video">
-              <iframe src={currentUrl} className="w-full h-full" allowFullScreen title={currentPart?.label} />
-            </div>
-          ) : (
-            <div className={`rounded-2xl border-2 border-dashed flex flex-col items-center justify-center h-72 gap-4 ${
-              darkMode ? "border-gray-700 text-gray-500" : "border-gray-200 text-gray-400"
-            }`}>
-              <span className="text-4xl">📊</span>
-              <div className="text-center">
-                <p className={`font-semibold text-sm ${darkMode ? "text-gray-300" : "text-gray-700"}`}>{currentPart?.label} 슬라이드 미연결</p>
-                <p className={`text-xs mt-1.5 ${darkMode ? "text-gray-600" : "text-gray-400"}`}>
-                  <code className={`px-1.5 py-0.5 rounded ${darkMode ? "bg-gray-800 text-amber-400" : "bg-gray-100 text-amber-600"}`}>
-                    {currentPart?.urlKey}
-                  </code>
-                  {" "}을 .env 파일에 입력하세요
-                </p>
-              </div>
-              <a
-                href="https://docs.google.com/presentation"
-                target="_blank"
-                rel="noreferrer"
-                className="text-xs px-4 py-2 rounded-xl bg-amber-500 text-white hover:bg-amber-600 transition-colors"
-              >
-                Google Slides 열기 →
-              </a>
-            </div>
-          )}
+          {/* 슬라이드 iframe */}
+          <div className="rounded-2xl overflow-hidden border border-gray-700 shadow-xl" style={{ aspectRatio: "16/9" }}>
+            <iframe
+              key={currentUrl}
+              src={currentUrl}
+              className="w-full h-full"
+              allowFullScreen
+              title={currentPart?.label}
+              style={{ border: "none", minHeight: "400px" }}
+            />
+          </div>
 
           <div className={`mt-4 rounded-xl p-4 text-xs leading-relaxed ${darkMode ? "bg-gray-800/60 text-gray-400" : "bg-amber-50 text-gray-600 border border-amber-100"}`}>
-            💡 <strong>슬라이드 연결:</strong> Google Slides → 파일 → 웹에 게시 → 임베드 → URL 복사 → .env의{" "}
-            <code className={`px-1 rounded ${darkMode ? "bg-gray-700 text-amber-400" : "bg-white text-amber-600"}`}>{currentPart?.urlKey}</code>에 붙여넣기
+            💡 슬라이드를 수정하려면 Google Slides에서 직접 편집하세요. 저장하면 자동으로 반영됩니다.
           </div>
         </div>
       )}
