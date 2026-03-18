@@ -121,14 +121,14 @@ export default function IssueLog({ darkMode }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">⚠️ 이슈 기록</h1>
+          <h1 className="text-xl md:text-2xl font-bold">⚠️ 이슈 기록</h1>
           <p className={`text-sm mt-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>
             방송 장애 및 해결 사례 모음
             {error && <span className="text-amber-400 ml-2">⚠ 시트 연결 실패, 데모 데이터 표시 중</span>}
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <div className={`relative flex items-center rounded-xl border ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} px-3 py-2 gap-2 w-48`}>
+          <div className={`relative flex items-center rounded-xl border ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"} px-3 py-2 gap-2 w-full md:w-48`}>
             <span className="text-gray-400 text-sm">🔍</span>
             <input
               value={search}
