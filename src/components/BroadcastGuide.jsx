@@ -9,7 +9,7 @@ const GUIDE_PARTS = [
     desc: "믹서, 마이크, 앰프 운용",
     color: "text-purple-400",
     accent: "border-purple-500 bg-purple-500/10",
-    url: "https://docs.google.com/presentation/d/e/2PACX-1vRZKJHly6UFgmtNqUrDf7tgVM_GecQ_o-3TnUypBQVAW606xeArSndxZRbbodQkocJ6yE3hvIF4CRtm/pub?start=false&loop=false&delayms=60000&embedded=true",
+    url: "https://docs.google.com/presentation/d/e/2PACX-1vRZKJHly6UFgmtNqUrDf7tgVM_GecQ_o-3TnUypBQVAW606xeArSndxZRbbodQkocJ6yE3hvIF4CRtm/pubembed?start=false&loop=false&delayms=3000",
   },
   {
     id: "pc",
@@ -17,7 +17,7 @@ const GUIDE_PARTS = [
     desc: "자막 편집, PPT 운용, PC 관리",
     color: "text-blue-400",
     accent: "border-blue-500 bg-blue-500/10",
-    url: "https://docs.google.com/presentation/d/e/2PACX-1vTg5QHE0QAGhrmHN_sh5ctFAeHbF-MpFJmOkRi14jXfa-8FxzOGEdP0AcqxlkyAgVVInwpRIjIUiMhn/pub?start=false&loop=false&delayms=60000&embedded=true",
+    url: "https://docs.google.com/presentation/d/e/2PACX-1vTg5QHE0QAGhrmHN_sh5ctFAeHbF-MpFJmOkRi14jXfa-8FxzOGEdP0AcqxlkyAgVVInwpRIjIUiMhn/pubembed?start=false&loop=false&delayms=3000",
   },
   {
     id: "camera",
@@ -25,7 +25,7 @@ const GUIDE_PARTS = [
     desc: "OBS, 유튜브 송출, DSLR, 본당 모니터",
     color: "text-pink-400",
     accent: "border-pink-500 bg-pink-500/10",
-    url: "https://docs.google.com/presentation/d/e/2PACX-1vQqWeTxJowegjXUNxDK6K4o30aOkoG1v28jaeMOD8k_JnFK1fhW3WRu4pDsqniKeHWrt0yNaweRDrOO/pub?start=false&loop=false&delayms=60000&embedded=true",
+    url: "https://docs.google.com/presentation/d/e/2PACX-1vQqWeTxJowegjXUNxDK6K4o30aOkoG1v28jaeMOD8k_JnFK1fhW3WRu4pDsqniKeHWrt0yNaweRDrOO/pubembed?start=false&loop=false&delayms=3000",
   },
   {
     id: "lighting",
@@ -33,7 +33,7 @@ const GUIDE_PARTS = [
     desc: "조명 패널, 색온도, 씬 관리",
     color: "text-amber-400",
     accent: "border-amber-500 bg-amber-500/10",
-    url: "https://docs.google.com/presentation/d/e/2PACX-1vRH9AAzPYhzGSUfSxH0_ySAPvDjHgkos5t7yx2Yc51Kj5wafI7LXMKfOytUKaqoWQvE542ELJxU4ft0/pub?start=false&loop=false&delayms=60000&embedded=true",
+    url: "https://docs.google.com/presentation/d/e/2PACX-1vRH9AAzPYhzGSUfSxH0_ySAPvDjHgkos5t7yx2Yc51Kj5wafI7LXMKfOytUKaqoWQvE542ELJxU4ft0/pubembed?start=false&loop=false&delayms=3000",
   },
 ];
 
