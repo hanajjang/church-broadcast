@@ -63,7 +63,7 @@ export default function Notice({ darkMode }) {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">📢 공지사항</h1>
+          <h1 className="text-xl md:text-2xl font-bold">📢 공지사항</h1>
           <p className={`text-sm mt-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>방송부 전달 사항</p>
         </div>
         <button
