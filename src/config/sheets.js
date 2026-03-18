@@ -20,7 +20,7 @@ export const CONFIG = {
   ISSUES_SHEET_ID: import.meta.env.VITE_ISSUES_SHEET_ID
     || "1R3V7u77x1LSDPrhlfqZ2vaxtlf6B-oxxpq6NKYcQ5a4",
   API_KEY: import.meta.env.VITE_GOOGLE_API_KEY || "YOUR_GOOGLE_API_KEY",
-  APPS_SCRIPT_URL: import.meta.env.VITE_APPS_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbyRaXNQEmBgXQiDaxLsx0IE1Uu-v1TEgMMR9Hi6PRPs_HKaNg2TL-9r27ps66UhDnG_/exec",
+  APPS_SCRIPT_URL: import.meta.env.VITE_APPS_SCRIPT_URL || "https://script.google.com/macros/s/AKfycbzDyaKz3S_e2TxcJeYM12uPqFsJo9FSvhHYCaOl8t6ps5qpvAvCPf1y_VYf1JRzWsI7/exec",
   WRITE_PASSWORD: import.meta.env.VITE_WRITE_PASSWORD || "broadcast2025",
   // 이슈 기록 Google Form URL
   ISSUE_FORM_URL: import.meta.env.VITE_ISSUE_FORM_URL
