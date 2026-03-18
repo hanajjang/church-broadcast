@@ -81,7 +81,7 @@ export default function BroadcastGuide({ darkMode }) {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">📋 방송 가이드</h1>
+        <h1 className="text-xl md:text-2xl font-bold">📋 방송 가이드</h1>
         <p className={`text-sm mt-1 ${darkMode ? "text-gray-400" : "text-gray-500"}`}>파트별 인수인계 자료 및 운용 가이드</p>
       </div>
 
