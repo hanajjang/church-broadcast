@@ -83,7 +83,12 @@ export default function SongList() {
 
   function scrollToConsonant(cons) {
     const el = consRefs.current[cons];
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!el) return;
+    // sticky 검색창 높이만큼 오프셋 보정
+    const rect = el.getBoundingClientRect();
+    const offset = 120; // sticky 헤더 높이
+    const scrollY = window.scrollY + rect.top - offset;
+    window.scrollTo({ top: scrollY, behavior: "smooth" });
   }
 
   const handleIndexTouch = useCallback((e) => {
