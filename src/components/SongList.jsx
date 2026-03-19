@@ -264,15 +264,16 @@ export default function SongList() {
           {/* ── 인덱스바 (모바일 드래그 스크롤) ── */}
           <div
             ref={indexBarRef}
-            className="md:hidden flex flex-col items-center justify-between py-2 flex-shrink-0 select-none touch-none"
-            style={{ width: "18px" }}
+            className="md:hidden flex flex-col items-center py-1 flex-shrink-0 select-none touch-none rounded-full bg-[#e8f0fe]"
+            style={{ width: "20px", gap: "1px" }}
             onTouchStart={handleIndexTouch}
             onTouchMove={handleIndexMove}
             onTouchEnd={handleIndexEnd}
           >
             {CONSONANTS.map(cons => (
               <span key={cons}
-                className="w-4 h-4 flex items-center justify-center text-[9px] font-bold text-[#94a3b8] leading-none">
+                className="w-5 flex items-center justify-center text-[10px] font-bold text-[#2563eb] leading-none"
+                style={{ height: "20px" }}>
                 {cons}
               </span>
             ))}
