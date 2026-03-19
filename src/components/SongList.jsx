@@ -111,13 +111,14 @@ export default function SongList() {
     setSaving(true);
     setSaveMsg("");
     try {
-      const res = await fetch(CONFIG.APPS_SCRIPT_URL, {
+      await fetch(CONFIG.APPS_SCRIPT_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({ action: "updateSongCategory", songTitle: song.제목, category: cat, value: newVal }),
       });
-      const result = await res.json();
-      if (result.status === "ok") {
+      // no-cors 모드에서는 응답을 읽을 수 없으므로 성공으로 간주
+      if (true) {
         // 로컬 상태 업데이트
         setSongs(prev => prev.map(s => s.제목 === song.제목 ? { ...s, [cat]: newVal } : s));
         setPopup(prev => prev ? { ...prev, song: { ...prev.song, [cat]: newVal } } : null);
