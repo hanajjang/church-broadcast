@@ -91,23 +91,41 @@ export default function SongList() {
     window.scrollTo({ top: scrollY, behavior: "smooth" });
   }
 
-  const handleIndexTouch = useCallback((e) => {
-    e.preventDefault();
-    isDragging.current = true;
-    const touch = e.touches[0];
-    const cons = getConsonantFromY(touch.clientY);
-    if (cons) scrollToConsonant(cons);
+  // non-passive 터치 이벤트 직접 등록 (passive 기본값 우회)
+  useEffect(() => {
+    const bar = indexBarRef.current;
+    if (!bar) return;
+
+    function onStart(e) {
+      e.preventDefault();
+      isDragging.current = true;
+      const touch = e.touches[0];
+      const cons = getConsonantFromY(touch.clientY);
+      if (cons) scrollToConsonant(cons);
+    }
+    function onMove(e) {
+      if (!isDragging.current) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const cons = getConsonantFromY(touch.clientY);
+      if (cons) scrollToConsonant(cons);
+    }
+    function onEnd() { isDragging.current = false; }
+
+    bar.addEventListener("touchstart", onStart, { passive: false });
+    bar.addEventListener("touchmove",  onMove,  { passive: false });
+    bar.addEventListener("touchend",   onEnd);
+
+    return () => {
+      bar.removeEventListener("touchstart", onStart);
+      bar.removeEventListener("touchmove",  onMove);
+      bar.removeEventListener("touchend",   onEnd);
+    };
   }, []);
 
-  const handleIndexMove = useCallback((e) => {
-    if (!isDragging.current) return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    const cons = getConsonantFromY(touch.clientY);
-    if (cons) scrollToConsonant(cons);
-  }, []);
-
-  const handleIndexEnd = useCallback(() => { isDragging.current = false; }, []);
+  const handleIndexTouch = useCallback(() => {}, []);
+  const handleIndexMove  = useCallback(() => {}, []);
+  const handleIndexEnd   = useCallback(() => {}, []);
 
   // ── 팝업에서 카테고리 토글 ─────────────────────────────────
   async function toggleCategory(song, cat) {
