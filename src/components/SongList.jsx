@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { fetchSheet, DEMO_DATA, CONFIG } from "../config/sheets";
 
-const CATEGORIES = ["전체", "명곡", "뮤비", "예배찬송/악보영상", "준비찬양"];
-const CAT_COLS   = ["명곡", "뮤비", "예배찬송/악보영상", "준비찬양"];
+const CATEGORIES = ["전체", "명곡", "준비찬양", "뮤비", "개회찬송", "찬송가"];
+const CAT_COLS   = ["명곡", "준비찬양", "뮤비", "개회찬송", "찬송가"];
 const SHEETS_URL = `https://docs.google.com/spreadsheets/d/1TlWKZ5tr531kNZMBLLwb4PjX6ON1JY03i4fHrvJE6OM/edit#gid=0`;
 
 const TAG_COLORS = {
-  "명곡":            "bg-purple-100 text-purple-700 border-purple-200",
-  "뮤비":            "bg-pink-100 text-pink-700 border-pink-200",
-  "예배찬송/악보영상": "bg-green-100 text-green-700 border-green-200",
-  "준비찬양":         "bg-blue-100 text-blue-700 border-blue-200",
+  "명곡":    "bg-purple-100 text-purple-700 border-purple-200",
+  "준비찬양": "bg-blue-100 text-blue-700 border-blue-200",
+  "뮤비":    "bg-pink-100 text-pink-700 border-pink-200",
+  "개회찬송": "bg-green-100 text-green-700 border-green-200",
+  "찬송가":  "bg-amber-100 text-amber-700 border-amber-200",
 };
 
 const CONSONANTS = ["ㄱ","ㄴ","ㄷ","ㄹ","ㅁ","ㅂ","ㅅ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ","A"];
@@ -34,10 +35,10 @@ function getSongCats(song) {
 }
 
 const DEMO_SONGS = [
-  { 제목: "가는 길",        명곡: "O", 뮤비: "O", "예배찬송/악보영상": "", 준비찬양: "" },
-  { 제목: "나의 피난처",    명곡: "",  뮤비: "",  "예배찬송/악보영상": "O", 준비찬양: "O" },
-  { 제목: "다 드리리",      명곡: "O", 뮤비: "",  "예배찬송/악보영상": "",  준비찬양: "" },
-  { 제목: "Amazing Grace", 명곡: "O", 뮤비: "",  "예배찬송/악보영상": "",  준비찬양: "" },
+  { 제목: "가는 길",        명곡: "O", 준비찬양: "",  뮤비: "O", 개회찬송: "", 찬송가: "" },
+  { 제목: "나의 피난처",    명곡: "",  준비찬양: "O", 뮤비: "",  개회찬송: "", 찬송가: "" },
+  { 제목: "다 드리리",      명곡: "O", 준비찬양: "",  뮤비: "",  개회찬송: "O", 찬송가: "" },
+  { 제목: "Amazing Grace", 명곡: "O", 준비찬양: "",  뮤비: "",  개회찬송: "", 찬송가: "O" },
 ];
 
 export default function SongList() {
